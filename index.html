@@ -1,0 +1,1385 @@
+<!-- index.html -->
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="color-scheme" content="dark light" />
+  <title>NEON NEWS 99 — Your Interest-Driven Headlines</title>
+  <style>
+    :root{
+      --bg:#081018;
+      --panel:#0e1a26;
+      --panel2:#0b1420;
+      --ink:#e9f2ff;
+      --muted:#a7b9d6;
+      --hot:#ffcf5c;
+      --ok:#54ffa6;
+      --warn:#ff6b8b;
+      --line:#2a3a52;
+      --shadow:#00000055;
+      --accent:#7d5cff;
+      --accent2:#35d0ff;
+      --mono: ui-monospace, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --ui: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+    }
+
+    body{
+      margin:0;
+      font-family: var(--ui);
+      color: var(--ink);
+      background:
+        radial-gradient(800px 600px at 20% 10%, rgba(125,92,255,.18), transparent 60%),
+        radial-gradient(900px 650px at 80% 15%, rgba(53,208,255,.16), transparent 60%),
+        linear-gradient(180deg, #050a10, var(--bg));
+      min-height:100vh;
+    }
+
+    .scanlines:before{
+      content:"";
+      position:fixed; inset:0;
+      background: repeating-linear-gradient(
+        to bottom,
+        rgba(255,255,255,.045),
+        rgba(255,255,255,.045) 1px,
+        rgba(0,0,0,0) 2px,
+        rgba(0,0,0,0) 6px
+      );
+      pointer-events:none;
+      mix-blend-mode: soft-light;
+      opacity:.25;
+      z-index:0;
+    }
+
+    .wrap{ position:relative; z-index:1; max-width:1200px; margin:0 auto; padding:16px; }
+
+    .titlebar{
+      display:flex; align-items:center; justify-content:space-between; gap:12px;
+      padding:12px 14px;
+      border:1px solid var(--line);
+      background: linear-gradient(180deg, rgba(125,92,255,.18), rgba(14,26,38,.92));
+      box-shadow: 0 10px 30px var(--shadow);
+      border-radius:14px;
+    }
+    .logo{ display:flex; flex-direction:column; gap:2px; line-height:1.05; }
+    .logo .top{
+      font-family: var(--mono);
+      letter-spacing:.14em;
+      font-weight:800;
+      font-size:18px;
+      text-transform:uppercase;
+    }
+    .logo .sub{
+      font-family: var(--mono);
+      color: var(--muted);
+      font-size:12px;
+    }
+
+    .marq{
+      margin:10px 0 0 0;
+      border:1px dashed rgba(125,92,255,.55);
+      border-radius:12px;
+      overflow:hidden;
+      background: rgba(14,26,38,.65);
+    }
+    .marq marquee{
+      padding:8px 10px;
+      font-family: var(--mono);
+      color: rgba(233,242,255,.92);
+      font-size:12px;
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns: 260px 1fr;
+      gap:14px;
+      margin-top:14px;
+    }
+
+    .panel{
+      border:1px solid var(--line);
+      background: linear-gradient(180deg, rgba(14,26,38,.88), rgba(11,20,32,.88));
+      box-shadow: 0 10px 28px var(--shadow);
+      border-radius:14px;
+    }
+    .panel .hd{
+      padding:12px 12px 10px 12px;
+      border-bottom:1px solid rgba(42,58,82,.65);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+    }
+    .panel .hd h2{
+      margin:0;
+      font-size:13px;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      font-family: var(--mono);
+      color: rgba(233,242,255,.92);
+    }
+    .panel .bd{ padding:12px; }
+
+    .btn{
+      border:1px solid rgba(125,92,255,.55);
+      background: linear-gradient(180deg, rgba(125,92,255,.22), rgba(125,92,255,.08));
+      color: var(--ink);
+      padding:9px 10px;
+      border-radius:12px;
+      cursor:pointer;
+      font-family: var(--mono);
+      font-size:12px;
+      box-shadow: 0 6px 16px rgba(0,0,0,.22);
+      transition: transform .05s ease, filter .12s ease;
+      user-select:none;
+      display:inline-flex; align-items:center; gap:8px;
+    }
+    .btn:hover{ filter:brightness(1.08); }
+    .btn:active{ transform: translateY(1px); }
+    .btn.ghost{
+      background: transparent;
+      border:1px solid rgba(42,58,82,.9);
+      color: rgba(233,242,255,.9);
+    }
+    .btn.good{ border-color: rgba(84,255,166,.55); background: linear-gradient(180deg, rgba(84,255,166,.16), rgba(84,255,166,.06)); }
+    .btn.warn{ border-color: rgba(255,107,139,.55); background: linear-gradient(180deg, rgba(255,107,139,.18), rgba(255,107,139,.06)); }
+
+    .navlist{ display:flex; flex-direction:column; gap:8px; }
+    .navbtn{
+      width:100%;
+      text-align:left;
+      justify-content:space-between;
+      border:1px solid rgba(42,58,82,.9);
+      background: rgba(8,16,24,.35);
+    }
+    .navbtn.active{
+      border-color: rgba(53,208,255,.65);
+      background: linear-gradient(180deg, rgba(53,208,255,.18), rgba(11,20,32,.55));
+    }
+    .navbtn small{ color: rgba(167,185,214,.9); font-family: var(--mono); }
+
+    .controls{
+      display:flex; flex-wrap:wrap; gap:10px; align-items:center; justify-content:space-between;
+      padding:12px;
+      border-bottom:1px solid rgba(42,58,82,.65);
+    }
+    .controls .left, .controls .right{ display:flex; flex-wrap:wrap; gap:10px; align-items:center; }
+    .input{
+      border:1px solid rgba(42,58,82,.9);
+      background: rgba(8,16,24,.35);
+      color: var(--ink);
+      padding:9px 10px;
+      border-radius:12px;
+      outline:none;
+      font-family: var(--mono);
+      font-size:12px;
+      min-width: 240px;
+    }
+    select.input{ min-width: 180px; }
+
+    .chips{ display:flex; flex-wrap:wrap; gap:8px; }
+    .chip{
+      border:1px solid rgba(42,58,82,.9);
+      background: rgba(8,16,24,.35);
+      padding:7px 10px;
+      border-radius:999px;
+      cursor:pointer;
+      font-family: var(--mono);
+      font-size:12px;
+      color: rgba(233,242,255,.92);
+      user-select:none;
+    }
+    .chip.active{
+      border-color: rgba(255,207,92,.75);
+      background: rgba(255,207,92,.12);
+      color: var(--hot);
+    }
+
+    .list{
+      padding:12px;
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+    .card{
+      border:1px solid rgba(42,58,82,.9);
+      background: linear-gradient(180deg, rgba(14,26,38,.65), rgba(8,16,24,.45));
+      border-radius:14px;
+      padding:12px;
+      box-shadow: 0 8px 20px rgba(0,0,0,.20);
+    }
+    .card .t{
+      display:flex; gap:10px; align-items:flex-start; justify-content:space-between;
+    }
+    .card a{
+      color: rgba(233,242,255,.96);
+      text-decoration:none;
+    }
+    .card a:hover{ text-decoration:underline; text-decoration-color: rgba(53,208,255,.65); }
+    .card h3{
+      margin:0;
+      font-size:15px;
+      line-height:1.25;
+    }
+    .meta{
+      margin-top:6px;
+      color: rgba(167,185,214,.9);
+      font-family: var(--mono);
+      font-size:12px;
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      align-items:center;
+    }
+    .badge{
+      font-family: var(--mono);
+      font-size:11px;
+      border:1px solid rgba(42,58,82,.9);
+      background: rgba(8,16,24,.35);
+      padding:4px 8px;
+      border-radius:999px;
+      color: rgba(233,242,255,.9);
+    }
+    .badge.hot{ border-color: rgba(255,207,92,.75); color: var(--hot); background: rgba(255,207,92,.12); }
+    .badge.new{ border-color: rgba(84,255,166,.75); color: var(--ok); background: rgba(84,255,166,.10); }
+    .badge.warn{ border-color: rgba(255,107,139,.75); color: var(--warn); background: rgba(255,107,139,.10); }
+    .summary{
+      margin-top:10px;
+      color: rgba(233,242,255,.92);
+      font-size:13px;
+      line-height:1.45;
+    }
+    .takeaways{
+      margin-top:10px;
+      padding-left:18px;
+      color: rgba(233,242,255,.88);
+      font-size:13px;
+    }
+    .takeaways li{ margin:4px 0; }
+
+    .footer{
+      padding:10px 12px;
+      border-top:1px solid rgba(42,58,82,.65);
+      color: rgba(167,185,214,.9);
+      font-family: var(--mono);
+      font-size:12px;
+      display:flex; flex-wrap:wrap; gap:10px; align-items:center; justify-content:space-between;
+    }
+
+    details{
+      border:1px solid rgba(42,58,82,.9);
+      border-radius:14px;
+      background: rgba(8,16,24,.35);
+      overflow:hidden;
+    }
+    details summary{
+      cursor:pointer;
+      padding:10px 12px;
+      font-family: var(--mono);
+      list-style:none;
+      user-select:none;
+      display:flex; align-items:center; justify-content:space-between; gap:10px;
+    }
+    details summary::-webkit-details-marker{ display:none; }
+    .settingsBody{ padding:12px; border-top:1px solid rgba(42,58,82,.65); }
+    textarea{
+      width:100%;
+      min-height:240px;
+      resize:vertical;
+      border:1px solid rgba(42,58,82,.9);
+      background: rgba(8,16,24,.35);
+      color: var(--ink);
+      padding:10px;
+      border-radius:12px;
+      font-family: var(--mono);
+      font-size:12px;
+      line-height:1.35;
+      outline:none;
+    }
+    .row{ display:flex; flex-wrap:wrap; gap:10px; align-items:center; justify-content:flex-start; margin-top:10px; }
+    .hint{ color: rgba(167,185,214,.95); font-size:12px; line-height:1.4; }
+
+    @media (max-width: 980px){
+      .grid{ grid-template-columns:1fr; }
+      .input{ min-width: 200px; }
+    }
+  </style>
+</head>
+<body class="scanlines">
+  <div class="wrap">
+    <div class="titlebar panel">
+      <div class="logo">
+        <div class="top">NEON NEWS 99</div>
+        <div class="sub">interest-driven headlines • concise takeaways • refresh for the latest</div>
+      </div>
+      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+        <button class="btn good" id="btnRefresh">⟳ Refresh</button>
+        <button class="btn ghost" id="btnVibe">⚡ Vibe Coding</button>
+        <button class="btn ghost" id="btnSettings">⚙ Control Panel</button>
+      </div>
+    </div>
+
+    <div class="marq">
+      <marquee behavior="scroll" direction="left" scrollamount="6">
+        🛰️ Fetching stories from RSS feeds + Google News RSS. Tip: edit categories in the Control Panel to swap rail → trucking (or anything else). ✨
+      </marquee>
+    </div>
+
+    <div class="grid">
+      <!-- Left -->
+      <div class="panel">
+        <div class="hd"><h2>Sections</h2><span class="badge" id="lastUpdated">—</span></div>
+        <div class="bd">
+          <div class="navlist" id="categoryNav"></div>
+
+          <div style="height:12px"></div>
+
+          <div class="hint">
+            <div style="font-family:var(--mono); letter-spacing:.08em; text-transform:uppercase; margin-bottom:6px;">About</div>
+            Headlines are ranked by recency + keyword match. Summaries come from each feed’s snippet/description (no paid API keys required).
+          </div>
+        </div>
+      </div>
+
+      <!-- Main -->
+      <div class="panel">
+        <div class="controls">
+          <div class="left">
+            <input class="input" id="searchBox" placeholder="Search headlines & summaries…" />
+            <select class="input" id="timeRange">
+              <option value="24">Last 24 hours</option>
+              <option value="72" selected>Last 3 days</option>
+              <option value="168">Last 7 days</option>
+              <option value="9999">Any time</option>
+            </select>
+            <select class="input" id="sortMode">
+              <option value="interesting" selected>Sort: Most interesting</option>
+              <option value="newest">Sort: Newest</option>
+            </select>
+          </div>
+          <div class="right">
+            <span class="badge" id="statusPill">Idle</span>
+          </div>
+        </div>
+
+        <div class="bd" id="topicWrap" style="padding-bottom:0; display:none;">
+          <div class="chips" id="topicChips"></div>
+        </div>
+
+        <div class="list" id="storyList"></div>
+
+        <div class="footer">
+          <div id="footerLeft">—</div>
+          <div id="footerRight">NEON NEWS 99 • localStorage enabled</div>
+        </div>
+
+        <div class="bd" style="padding-top:0;">
+          <details id="settingsPanel">
+            <summary>
+              <span>⚙ Control Panel (edit categories, feeds, keywords)</span>
+              <span class="badge">JSON</span>
+            </summary>
+            <div class="settingsBody">
+              <div class="hint">
+                Edit the JSON below to add/remove categories, update keywords, or swap a whole topic (example: rail → trucking).
+                Click <span class="badge">Save</span> to apply. Everything persists in your browser via localStorage.
+              </div>
+
+              <div style="height:10px"></div>
+              <textarea id="configEditor" spellcheck="false"></textarea>
+
+              <div class="row">
+                <button class="btn good" id="btnSaveConfig">💾 Save</button>
+                <button class="btn warn" id="btnResetConfig">↺ Reset defaults</button>
+                <button class="btn ghost" id="btnExportConfig">⤓ Export JSON</button>
+                <button class="btn ghost" id="btnImportConfig">⤒ Import JSON</button>
+                <input type="file" id="importFile" accept="application/json" style="display:none" />
+                <span class="badge" id="configMsg">—</span>
+              </div>
+            </div>
+          </details>
+
+          <details id="vibePanel">
+            <summary>
+              <span>⚡ Vibe Coding Challenge (fun, daily-ish)</span>
+              <span class="badge hot">NEW</span>
+            </summary>
+            <div class="settingsBody" id="vibeBody"></div>
+          </details>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+/**
+ * NEON NEWS 99
+ * - Static GitHub Pages friendly
+ * - Pulls RSS/Atom + Google News RSS (search) via CORS proxies
+ * - Ranks by recency + keyword score
+ * - Configurable categories stored in localStorage
+ */
+
+const LS_KEY = "neonnews99_config_v1";
+const LS_UI_KEY = "neonnews99_ui_v1";
+
+const DEFAULT_CONFIG = {
+  app: {
+    title: "NEON NEWS 99",
+    maxItemsPerCategory: 45,
+    requestTimeoutMs: 12000
+  },
+  proxies: [
+    { name: "AllOrigins Raw", kind: "prefix", url: "https://api.allorigins.win/raw?url=" },
+    { name: "Isomorphic Git CORS", kind: "prefix", url: "https://cors.isomorphic-git.org/" },
+    { name: "ThingProxy", kind: "prefix", url: "https://thingproxy.freeboard.io/fetch/" },
+    { name: "Jina AI", kind: "jina", url: "https://r.jina.ai/" }
+  ],
+  categories: {
+    soccer: {
+      label: "⚽ Soccer / Football",
+      description: "Premier League + Manchester United focus.",
+      keywords: [
+        "premier league","manchester united","man utd",
+        "transfer","injury","fixture","table","goal","manager"
+      ],
+      topics: {
+        all: {
+          label: "All soccer",
+          extraKeywords: [],
+          feeds: [
+            "https://www.theguardian.com/football/rss",
+            "https://news.google.com/rss/search?q=premier%20league%20OR%20%22Manchester%20United%22&hl=en-US&gl=US&ceid=US:en"
+          ]
+        },
+        premierleague: {
+          label: "Premier League",
+          extraKeywords: ["premier league","epl","arsenal","liverpool","manchester city","chelsea","tottenham","newcastle"],
+          feeds: [
+            "https://www.theguardian.com/football/premierleague/rss",
+            "https://news.google.com/rss/search?q=%22Premier%20League%22%20OR%20premier%20league&hl=en-GB&gl=GB&ceid=GB:en"
+          ]
+        },
+        manutd: {
+          label: "Manchester United",
+          extraKeywords: ["manchester united","man utd","old trafford","ratcliffe","transfer","bruno fernandes"],
+          feeds: [
+            "https://www.theguardian.com/football/manchester-united/rss",
+            "https://news.google.com/rss/search?q=%22Manchester%20United%22%20OR%20%22Man%20Utd%22&hl=en-GB&gl=GB&ceid=GB:en"
+          ]
+        }
+      }
+    },
+
+    seattle_sports: {
+      label: "🏙️ Seattle Sports",
+      description: "Seattle Sounders + Mariners + Seahawks.",
+      keywords: [
+        "seattle sounders","sounders","sounders fc","mls",
+        "seattle mariners","mariners","mlb","t-mobile park",
+        "seattle seahawks","seahawks","nfl","lumen field",
+        "trade","signs","injury","schedule","playoffs","draft"
+      ],
+      topics: {
+        all: {
+          label: "All Seattle sports",
+          extraKeywords: [],
+          feeds: [
+            "https://news.google.com/rss/search?q=%22Seattle%20Sounders%22%20OR%20%22Seattle%20Mariners%22%20OR%20%22Seattle%20Seahawks%22&hl=en-US&gl=US&ceid=US:en"
+          ]
+        },
+        sounders: {
+          label: "Sounders",
+          extraKeywords: ["seattle sounders","sounders fc","mls","concacaf","leagues cup","lumen field"],
+          feeds: [
+            "https://news.google.com/rss/search?q=%22Seattle%20Sounders%22%20OR%20%22Sounders%20FC%22%20OR%20%22Seattle%20Sounders%20FC%22&hl=en-US&gl=US&ceid=US:en"
+          ]
+        },
+        mariners: {
+          label: "Mariners",
+          extraKeywords: ["seattle mariners","mariners","mlb","t-mobile park","al west","spring training"],
+          feeds: [
+            "https://news.google.com/rss/search?q=%22Seattle%20Mariners%22%20OR%20Mariners%20MLB&hl=en-US&gl=US&ceid=US:en"
+          ]
+        },
+        seahawks: {
+          label: "Seahawks",
+          extraKeywords: ["seattle seahawks","seahawks","nfl","draft","free agency","trade","training camp"],
+          feeds: [
+            "https://news.google.com/rss/search?q=%22Seattle%20Seahawks%22%20OR%20Seahawks%20NFL&hl=en-US&gl=US&ceid=US:en"
+          ]
+        }
+      }
+    },
+
+    rail: {
+      label: "🚆 Rail + Transport Tech",
+      description: "Rail transportation + tech advancements (multi-modal).",
+      keywords: ["rail","railroad","intermodal","freight","visibility","tracking","dispatch","ptc","ertms","etcs","locomotive","automation","port","terminal","yard","telematics","supply chain"],
+      topics: {
+        all: {
+          label: "All transport tech",
+          extraKeywords: [],
+          feeds: [
+            "https://www.railwayage.com/feed/",
+            "https://www.railwaygazette.com/metro-report/489.rss",
+            "https://news.google.com/rss/search?q=rail%20technology%20OR%20railroad%20technology%20OR%20intermodal%20technology%20OR%20freight%20visibility%20OR%20port%20automation&hl=en-US&gl=US&ceid=US:en"
+          ]
+        },
+        railfreight: {
+          label: "Rail freight",
+          extraKeywords: ["rail freight","intermodal","yard","terminal","dwell","service","capacity"],
+          feeds: [
+            "https://news.google.com/rss/search?q=%22rail%20freight%22%20OR%20intermodal%20OR%20railroad%20capacity&hl=en-US&gl=US&ceid=US:en",
+            "https://www.railwayage.com/feed/"
+          ]
+        },
+        transit: {
+          label: "Passenger / transit",
+          extraKeywords: ["metro","light rail","transit","timetable","fare","station","ridership"],
+          feeds: [
+            "https://www.railwaygazette.com/metro-report/489.rss",
+            "https://news.google.com/rss/search?q=metro%20rail%20OR%20light%20rail%20technology%20OR%20rail%20transit%20upgrade&hl=en-US&gl=US&ceid=US:en"
+          ]
+        },
+        multimodal: {
+          label: "Multi-modal logistics",
+          extraKeywords: ["port","ocean","truck","drayage","warehouse","visibility","supply chain"],
+          feeds: [
+            "https://news.google.com/rss/search?q=logistics%20technology%20OR%20supply%20chain%20visibility%20OR%20port%20automation%20OR%20intermodal%20software&hl=en-US&gl=US&ceid=US:en"
+          ]
+        }
+      }
+    },
+
+    startups: {
+      label: "🚀 Startups + IPOs",
+      description: "Startup product moves, funding, and IPO chatter.",
+      keywords: ["startup","seed","series a","series b","series c","funding","round","valuation","unicorn","ipo","s-1","nasdaq","nyse","acquisition","merger","vc","venture"],
+      topics: {
+        all: {
+          label: "All startup news",
+          extraKeywords: [],
+          feeds: [
+            "https://techcrunch.com/startups/feed/",
+            "https://techcrunch.com/tag/ipo/feed/",
+            "https://www.geekwire.com/startups/feed/",
+            "https://news.google.com/rss/search?q=tech%20startup%20funding%20OR%20startup%20IPO%20OR%20venture%20capital%20round&hl=en-US&gl=US&ceid=US:en"
+          ]
+        },
+        funding: {
+          label: "Funding",
+          extraKeywords: ["funding","series","seed","round","valuation"],
+          feeds: [
+            "https://techcrunch.com/tag/funding/feed/",
+            "https://news.google.com/rss/search?q=startup%20funding%20round%20OR%20series%20a%20OR%20series%20b%20OR%20seed%20round&hl=en-US&gl=US&ceid=US:en"
+          ]
+        },
+        ipos: {
+          label: "IPOs",
+          extraKeywords: ["ipo","s-1","listing","debut","pricing","roadshow"],
+          feeds: [
+            "https://techcrunch.com/tag/ipo/feed/",
+            "https://techcrunch.com/tag/ipo-market/feed/",
+            "https://news.google.com/rss/search?q=tech%20IPO%20OR%20startup%20files%20S-1%20OR%20public%20listing%20tech&hl=en-US&gl=US&ceid=US:en"
+          ]
+        }
+      }
+    },
+
+    ai: {
+      label: "🤖 AI News + Tools",
+      description: "AI products, agents, tooling… plus a vibe-coding challenge generator.",
+      keywords: ["ai","agent","agentic","llm","model","tool","release","launch","open source","benchmark","reasoning","copilot","coding","vibe coding","prompt","inference","safety"],
+      topics: {
+        all: {
+          label: "All AI",
+          extraKeywords: [],
+          feeds: [
+            "https://openai.com/news/rss.xml",
+            "https://venturebeat.com/category/ai/feed/",
+            "https://deepmind.google/discover/blog/rss/",
+            "https://www.technologyreview.com/feed/",
+            "https://www.microsoft.com/en-us/research/feed/",
+            "https://news.google.com/rss/search?q=AI%20agents%20OR%20LLM%20tooling%20OR%20%22AI%20product%22%20OR%20%22open%20source%20model%22%20OR%20vibe%20coding&hl=en-US&gl=US&ceid=US:en"
+          ]
+        },
+        products: {
+          label: "Products",
+          extraKeywords: ["launch","release","pricing","api","app","tool","integration"],
+          feeds: [
+            "https://openai.com/news/rss.xml",
+            "https://news.google.com/rss/search?q=AI%20tool%20launch%20OR%20AI%20product%20release%20OR%20AI%20API%20pricing&hl=en-US&gl=US&ceid=US:en"
+          ]
+        },
+        research: {
+          label: "Research",
+          extraKeywords: ["paper","benchmark","dataset","method","alignment","safety","evals"],
+          feeds: [
+            "https://www.microsoft.com/en-us/research/feed/",
+            "https://deepmind.google/discover/blog/rss/",
+            "https://news.google.com/rss/search?q=AI%20research%20paper%20OR%20benchmark%20OR%20alignment%20OR%20model%20evals&hl=en-US&gl=US&ceid=US:en"
+          ]
+        }
+      }
+    }
+  }
+};
+
+const DEFAULT_UI = {
+  categoryKey: "soccer",
+  topicKeyByCategory: { soccer: "all", seattle_sports: "all", rail: "all", startups: "all", ai: "all" }
+};
+
+// ---------- Utilities ----------
+const sleep = (ms) => new Promise(r => setTimeout(r, ms));
+
+function fmtTime(d){
+  try {
+    return new Intl.DateTimeFormat(undefined, { dateStyle:"medium", timeStyle:"short" }).format(d);
+  } catch {
+    return d.toLocaleString();
+  }
+}
+
+function hoursSince(d){
+  return (Date.now() - d.getTime()) / 36e5;
+}
+
+function safeJsonParse(s){
+  try { return JSON.parse(s); } catch { return null; }
+}
+
+function loadConfig(){
+  const raw = localStorage.getItem(LS_KEY);
+  const parsed = raw ? safeJsonParse(raw) : null;
+  return parsed && parsed.categories ? parsed : structuredClone(DEFAULT_CONFIG);
+}
+
+function saveConfig(cfg){
+  localStorage.setItem(LS_KEY, JSON.stringify(cfg, null, 2));
+}
+
+function loadUI(){
+  const raw = localStorage.getItem(LS_UI_KEY);
+  const parsed = raw ? safeJsonParse(raw) : null;
+  if (!parsed) return structuredClone(DEFAULT_UI);
+  return {
+    ...structuredClone(DEFAULT_UI),
+    ...parsed,
+    topicKeyByCategory: { ...structuredClone(DEFAULT_UI.topicKeyByCategory), ...(parsed.topicKeyByCategory||{}) }
+  };
+}
+
+function saveUI(ui){
+  localStorage.setItem(LS_UI_KEY, JSON.stringify(ui, null, 2));
+}
+
+function stripHtml(html){
+  const tmp = document.createElement("div");
+  tmp.innerHTML = html || "";
+  return (tmp.textContent || tmp.innerText || "").replace(/\s+/g," ").trim();
+}
+
+function normalizeUrl(u){
+  if (!u) return "";
+  try {
+    const url = new URL(u);
+    ["utm_source","utm_medium","utm_campaign","utm_term","utm_content","utm_id","fbclid","gclid"].forEach(p=>url.searchParams.delete(p));
+    return url.toString();
+  } catch {
+    return u.trim();
+  }
+}
+
+function bestGuessSource(feedUrl, itemSourceText){
+  if (itemSourceText) return itemSourceText;
+  try { return new URL(feedUrl).hostname.replace(/^www\./,""); }
+  catch { return "source"; }
+}
+
+function scoreItem(item, keywords){
+  const text = (item.title + " " + (item.summary||"")).toLowerCase();
+  const kw = (keywords || []).map(k => (k||"").toLowerCase()).filter(Boolean);
+
+  const matches = kw.reduce((acc, k) => acc + (text.includes(k) ? 1 : 0), 0);
+
+  const h = Math.max(0, Math.min(168, hoursSince(item.date))); // clamp 0..7 days
+  const recency = Math.max(0, 168 - h); // newer = higher
+
+  const signalTerms = [
+    "ipo","s-1","launch","release","raises","funding","acquires","acquisition",
+    "transfer","signs","injury","sacked","appointed","record","breakthrough",
+    "trade","draft","free agency","lineup","starter","rotation"
+  ];
+  const signalBoost = signalTerms.reduce((acc, t) => acc + (text.includes(t) ? 4 : 0), 0);
+
+  return recency + (matches * 10) + signalBoost;
+}
+
+function takeawaysFor(item, catKey){
+  const t = (item.title || "").toLowerCase();
+  const s = (item.summary || "").toLowerCase();
+  const out = [];
+  const add = (x) => { if (x && !out.includes(x)) out.push(x); };
+
+  if (catKey === "soccer"){
+    if (/(vs\.?| v )/.test(t) || t.includes("match") || t.includes("defeat") || t.includes("draw")){
+      add("Match angle: result/fixture update — check lineups and availability.");
+    }
+    if (t.includes("transfer") || t.includes("sign") || t.includes("loan")){
+      add("Transfer angle: watch fee/terms, timing window, and squad fit.");
+    }
+    if (t.includes("injury") || t.includes("out") || t.includes("doubt") || t.includes("suspension")){
+      add("Availability: injury/suspension news — impacts next XI and rotation.");
+    }
+    add("What to watch: follow-on reports in the next 24–48 hours (quotes, training, confirmations).");
+  }
+
+  if (catKey === "seattle_sports"){
+    if (t.includes("seahawks") || t.includes("nfl")){
+      add("Seahawks angle: track roster moves, draft context, and injury timelines.");
+    }
+    if (t.includes("mariners") || t.includes("mlb")){
+      add("Mariners angle: rotation/bullpen notes plus lineup health and matchups.");
+    }
+    if (t.includes("sounders") || t.includes("mls")){
+      add("Sounders angle: availability + tactics notes usually matter more than headlines.");
+    }
+    if (t.includes("trade") || t.includes("sign") || t.includes("free agency") || t.includes("draft")){
+      add("Move watch: confirm terms/details and whether it changes playing time immediately.");
+    }
+    add("What to watch: next game context (opponent, schedule density, travel).");
+  }
+
+  if (catKey === "rail"){
+    if (t.includes("automation") || t.includes("autonomous") || s.includes("automation")){
+      add("Tech signal: automation is creeping into yards/terminals — watch ROI and safety constraints.");
+    }
+    if (t.includes("regulation") || t.includes("safety") || t.includes("rule") || t.includes("policy")){
+      add("Policy signal: regulations can reshape timelines and vendor roadmaps.");
+    }
+    if (t.includes("capacity") || t.includes("congestion") || t.includes("dwell")){
+      add("Ops signal: capacity/dwell changes often cascade into service reliability and cost.");
+    }
+    add("What to watch: who is piloting vs. deploying at scale (and where).");
+  }
+
+  if (catKey === "startups"){
+    if (t.includes("raises") || t.includes("funding") || t.includes("series") || t.includes("seed")){
+      add("Funding signal: pay attention to valuation, lead investor, and use of proceeds.");
+    }
+    if (t.includes("ipo") || t.includes("s-1") || t.includes("public") || t.includes("listing")){
+      add("IPO signal: look for revenue growth, gross margin, and risk-factor themes.");
+    }
+    if (t.includes("acquires") || t.includes("acquisition") || t.includes("merger")){
+      add("M&A signal: buyer motive is often distribution or consolidation — watch product integration risk.");
+    }
+    add("What to watch: second-order effects (competitors respond, pricing shifts, follow-on rounds).");
+  }
+
+  if (catKey === "ai"){
+    if (t.includes("model") || t.includes("release") || t.includes("launch") || t.includes("gpt") || t.includes("gemini") || t.includes("claude")){
+      add("Product signal: check evals, pricing, latency, and tool integration surface area.");
+    }
+    if (t.includes("agents") || t.includes("agentic") || t.includes("workflow")){
+      add("Agent signal: reliability hinges on guardrails, observability, and crisp task boundaries.");
+    }
+    if (t.includes("safety") || t.includes("policy") || t.includes("alignment")){
+      add("Safety signal: watch deployment constraints and monitoring approaches.");
+    }
+    add("What to watch: whether features are incremental or unlock new workflows for builders.");
+  }
+
+  return out.slice(0, 3);
+}
+
+// ---------- Feed fetching/parsing ----------
+async function fetchWithTimeout(url, timeoutMs){
+  const ctrl = new AbortController();
+  const to = setTimeout(()=>ctrl.abort(), timeoutMs);
+  try {
+    const res = await fetch(url, { signal: ctrl.signal, cache: "no-store" });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    return await res.text();
+  } finally {
+    clearTimeout(to);
+  }
+}
+
+function proxyUrl(proxy, target){
+  if (proxy.kind === "prefix") return proxy.url + encodeURIComponent(target);
+  if (proxy.kind === "jina") return proxy.url + target;
+  return proxy.url + encodeURIComponent(target);
+}
+
+async function fetchFeedXml(feedUrl, cfg){
+  const timeout = cfg.app.requestTimeoutMs || 12000;
+  let lastErr = null;
+
+  for (const p of cfg.proxies || []){
+    try {
+      const u = proxyUrl(p, feedUrl);
+      const text = await fetchWithTimeout(u, timeout);
+
+      if (!/(<rss\b|<feed\b|<rdf\b)/i.test(text)) {
+        if (!/^\s*<\?xml/i.test(text)) throw new Error(`Not RSS/Atom via ${p.name}`);
+      }
+      return { text, proxyName: p.name };
+    } catch (e){
+      lastErr = e;
+      await sleep(60);
+    }
+  }
+
+  throw new Error(`Failed to fetch feed: ${feedUrl}. Last error: ${lastErr ? lastErr.message : "unknown"}`);
+}
+
+function parseFeed(xmlText, feedUrl){
+  const parser = new DOMParser();
+  const xml = parser.parseFromString(xmlText, "text/xml");
+  const parserError = xml.querySelector("parsererror");
+  if (parserError) throw new Error("XML parse error");
+
+  const isAtom = !!xml.querySelector("feed > entry");
+  const items = [];
+
+  if (isAtom){
+    const entries = Array.from(xml.querySelectorAll("feed > entry"));
+    for (const e of entries){
+      const title = (e.querySelector("title")?.textContent || "").trim();
+      const linkEl = e.querySelector('link[rel="alternate"]') || e.querySelector("link");
+      const link = normalizeUrl(linkEl?.getAttribute("href") || linkEl?.textContent || "");
+      const published = e.querySelector("published")?.textContent || e.querySelector("updated")?.textContent || "";
+      const summary = stripHtml(e.querySelector("summary")?.textContent || e.querySelector("content")?.textContent || "");
+      const date = published ? new Date(published) : new Date();
+      if (!title || !link) continue;
+      items.push({ title, link, date, summary, feedUrl });
+    }
+    return items;
+  }
+
+  const rssItems = Array.from(xml.querySelectorAll("item"));
+  for (const it of rssItems){
+    const title = (it.querySelector("title")?.textContent || "").trim();
+    const link = normalizeUrl((it.querySelector("link")?.textContent || "").trim());
+    const pub = (it.querySelector("pubDate")?.textContent || it.querySelector("date")?.textContent || "").trim();
+
+    const desc = it.querySelector("description")?.textContent || "";
+    const contentEncoded = it.getElementsByTagName("content:encoded")?.[0]?.textContent || "";
+    const rawSummary = contentEncoded || desc;
+
+    const sourceTag = it.querySelector("source")?.textContent || "";
+
+    const summary = stripHtml(rawSummary);
+    const date = pub ? new Date(pub) : new Date();
+
+    if (!title || !link) continue;
+    items.push({ title, link, date, summary, feedUrl, sourceHint: sourceTag });
+  }
+
+  return items;
+}
+
+// ---------- UI ----------
+const els = {
+  categoryNav: document.getElementById("categoryNav"),
+  storyList: document.getElementById("storyList"),
+  statusPill: document.getElementById("statusPill"),
+  lastUpdated: document.getElementById("lastUpdated"),
+  footerLeft: document.getElementById("footerLeft"),
+  footerRight: document.getElementById("footerRight"),
+  searchBox: document.getElementById("searchBox"),
+  timeRange: document.getElementById("timeRange"),
+  sortMode: document.getElementById("sortMode"),
+  btnRefresh: document.getElementById("btnRefresh"),
+  btnSettings: document.getElementById("btnSettings"),
+  btnVibe: document.getElementById("btnVibe"),
+  settingsPanel: document.getElementById("settingsPanel"),
+  vibePanel: document.getElementById("vibePanel"),
+  configEditor: document.getElementById("configEditor"),
+  btnSaveConfig: document.getElementById("btnSaveConfig"),
+  btnResetConfig: document.getElementById("btnResetConfig"),
+  btnExportConfig: document.getElementById("btnExportConfig"),
+  btnImportConfig: document.getElementById("btnImportConfig"),
+  importFile: document.getElementById("importFile"),
+  configMsg: document.getElementById("configMsg"),
+  topicWrap: document.getElementById("topicWrap"),
+  topicChips: document.getElementById("topicChips"),
+  vibeBody: document.getElementById("vibeBody")
+};
+
+let cfg = loadConfig();
+let ui = loadUI();
+let currentItems = [];
+let isLoading = false;
+
+function setStatus(text, kind){
+  els.statusPill.textContent = text;
+  els.statusPill.className = "badge" + (kind ? (" " + kind) : "");
+}
+
+function openPanel(panelEl){
+  panelEl.open = true;
+  panelEl.scrollIntoView({ behavior:"smooth", block:"start" });
+}
+
+function renderNav(){
+  els.categoryNav.innerHTML = "";
+  const keys = Object.keys(cfg.categories || {});
+  for (const k of keys){
+    const c = cfg.categories[k];
+    const btn = document.createElement("button");
+    btn.className = "btn navbtn" + (k === ui.categoryKey ? " active" : "");
+    btn.innerHTML = `<span>${c.label || k}</span><small>${k}</small>`;
+    btn.addEventListener("click", () => {
+      ui.categoryKey = k;
+      saveUI(ui);
+      renderNav();
+      renderTopics();
+      refresh();
+    });
+    els.categoryNav.appendChild(btn);
+  }
+}
+
+function renderTopics(){
+  const cat = cfg.categories[ui.categoryKey];
+  const topics = cat?.topics || {};
+  const topicKeys = Object.keys(topics);
+  if (!topicKeys.length){
+    els.topicWrap.style.display = "none";
+    return;
+  }
+
+  els.topicWrap.style.display = "block";
+  els.topicChips.innerHTML = "";
+
+  const selected = ui.topicKeyByCategory?.[ui.categoryKey] || topicKeys[0];
+
+  for (const tk of topicKeys){
+    const t = topics[tk];
+    const chip = document.createElement("div");
+    chip.className = "chip" + (tk === selected ? " active" : "");
+    chip.textContent = t.label || tk;
+    chip.addEventListener("click", ()=>{
+      ui.topicKeyByCategory[ui.categoryKey] = tk;
+      saveUI(ui);
+      renderTopics();
+      refresh();
+    });
+    els.topicChips.appendChild(chip);
+  }
+}
+
+function renderStories(items){
+  els.storyList.innerHTML = "";
+  if (!items.length){
+    const empty = document.createElement("div");
+    empty.className = "card";
+    empty.innerHTML = `
+      <h3 style="margin:0;">No stories matched.</h3>
+      <div class="summary">Try widening the time range, clearing the search box, or adding more feeds in the Control Panel.</div>
+    `;
+    els.storyList.appendChild(empty);
+    return;
+  }
+
+  for (const it of items){
+    const card = document.createElement("div");
+    card.className = "card";
+
+    const ageH = hoursSince(it.date);
+    const isNew = ageH <= 6;
+    const isHot = it.score >= (it.hotThreshold || 160);
+
+    const badges = [];
+    if (isNew) badges.push(`<span class="badge new">NEW</span>`);
+    if (isHot) badges.push(`<span class="badge hot">HOT</span>`);
+    badges.push(`<span class="badge">${escapeHtml(it.source)}</span>`);
+    badges.push(`<span class="badge">${fmtTime(it.date)}</span>`);
+
+    const takeawayLis = (it.takeaways || []).map(x => `<li>${escapeHtml(x)}</li>`).join("");
+
+    card.innerHTML = `
+      <div class="t">
+        <div style="flex:1 1 auto; min-width:0;">
+          <h3><a href="${escapeAttr(it.link)}" target="_blank" rel="noopener noreferrer">${escapeHtml(it.title)}</a></h3>
+          <div class="meta">${badges.join(" ")}</div>
+        </div>
+        <div style="flex:0 0 auto; display:flex; gap:8px; align-items:center;">
+          <span class="badge">★ ${Math.round(it.score)}</span>
+        </div>
+      </div>
+      <div class="summary">${escapeHtml(it.summary || "No summary available from the feed.")}</div>
+      ${takeawayLis ? `<ul class="takeaways">${takeawayLis}</ul>` : ""}
+    `;
+    els.storyList.appendChild(card);
+  }
+}
+
+function escapeHtml(s){
+  return (s ?? "").toString()
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+}
+function escapeAttr(s){
+  return escapeHtml(s).replaceAll("`","&#096;");
+}
+
+function applyFiltersAndRender(){
+  const q = (els.searchBox.value || "").trim().toLowerCase();
+  const hours = parseInt(els.timeRange.value, 10);
+  const sortMode = els.sortMode.value;
+
+  let items = currentItems.slice();
+
+  if (Number.isFinite(hours) && hours < 9999){
+    items = items.filter(x => hoursSince(x.date) <= hours);
+  }
+  if (q){
+    items = items.filter(x => (x.title + " " + (x.summary||"")).toLowerCase().includes(q));
+  }
+
+  if (sortMode === "newest"){
+    items.sort((a,b) => b.date - a.date);
+  } else {
+    items.sort((a,b) => b.score - a.score || (b.date - a.date));
+  }
+
+  const maxN = cfg.app.maxItemsPerCategory || 45;
+  items = items.slice(0, maxN);
+
+  renderStories(items);
+  els.footerLeft.textContent = `${items.length} stories shown • ${currentItems.length} fetched`;
+}
+
+async function refresh(){
+  if (isLoading) return;
+  isLoading = true;
+  setStatus("Loading…", "");
+  els.lastUpdated.textContent = "—";
+  els.footerLeft.textContent = "Fetching…";
+  els.storyList.innerHTML = "";
+
+  const catKey = ui.categoryKey;
+  const cat = cfg.categories[catKey];
+  const topicKey = ui.topicKeyByCategory?.[catKey] || Object.keys(cat.topics || {})[0] || "all";
+  const topic = (cat.topics || {})[topicKey] || { feeds: [] };
+
+  const keywords = Array.from(new Set([
+    ...(cat.keywords || []),
+    ...(topic.extraKeywords || [])
+  ]));
+
+  const feeds = (topic.feeds || []).filter(Boolean);
+
+  const started = Date.now();
+  let fetchedCount = 0;
+  let errCount = 0;
+
+  const seen = new Set();
+  const combined = [];
+
+  const concurrency = 4;
+  const queue = feeds.slice();
+  const workers = Array.from({length: Math.min(concurrency, queue.length)}, () => (async () => {
+    while (queue.length){
+      const feedUrl = queue.shift();
+      try{
+        const { text } = await fetchFeedXml(feedUrl, cfg);
+        const items = parseFeed(text, feedUrl);
+
+        for (const it of items){
+          const link = normalizeUrl(it.link);
+          const key = link || (it.title + "|" + it.date.toISOString());
+          if (seen.has(key)) continue;
+          seen.add(key);
+
+          const source = bestGuessSource(feedUrl, it.sourceHint);
+          const summary = (it.summary || "").slice(0, 360);
+
+          const scored = scoreItem({ ...it, link, summary }, keywords);
+
+          combined.push({
+            title: it.title,
+            link,
+            date: it.date instanceof Date && !isNaN(it.date) ? it.date : new Date(),
+            summary,
+            source,
+            score: scored
+          });
+        }
+
+        fetchedCount++;
+      } catch (e){
+        errCount++;
+        console.warn("Feed failed:", feedUrl, e);
+      }
+    }
+  })());
+
+  await Promise.all(workers);
+
+  const withTakeaways = combined.map(it => {
+    const takeaways = takeawaysFor(it, catKey);
+    const hotThreshold =
+      catKey === "soccer" ? 150 :
+      catKey === "seattle_sports" ? 150 :
+      catKey === "ai" ? 160 : 155;
+    return { ...it, takeaways, hotThreshold };
+  });
+
+  withTakeaways.sort((a,b) => b.score - a.score || (b.date - a.date));
+
+  currentItems = withTakeaways;
+  applyFiltersAndRender();
+
+  const ms = Date.now() - started;
+  setStatus(errCount === 0 ? "Loaded" : "Loaded (some feeds failed)", errCount === 0 ? "" : "warn");
+
+  els.lastUpdated.textContent = fmtTime(new Date());
+  els.footerRight.textContent = `Sources: ${feeds.length} • OK: ${fetchedCount} • Fail: ${errCount} • ${ms}ms`;
+
+  isLoading = false;
+}
+
+// ---------- Settings ----------
+function renderConfigEditor(){
+  els.configEditor.value = JSON.stringify(cfg, null, 2);
+}
+
+function flashConfigMsg(text, kind){
+  els.configMsg.textContent = text;
+  els.configMsg.className = "badge" + (kind ? (" " + kind) : "");
+}
+
+function hookSettings(){
+  els.btnSaveConfig.addEventListener("click", ()=>{
+    const parsed = safeJsonParse(els.configEditor.value);
+    if (!parsed || !parsed.categories){
+      flashConfigMsg("Invalid JSON or missing categories", "warn");
+      return;
+    }
+    cfg = parsed;
+    saveConfig(cfg);
+    renderNav();
+    renderTopics();
+    flashConfigMsg("Saved ✓", "new");
+    refresh();
+  });
+
+  els.btnResetConfig.addEventListener("click", ()=>{
+    cfg = structuredClone(DEFAULT_CONFIG);
+    saveConfig(cfg);
+    ui = structuredClone(DEFAULT_UI);
+    saveUI(ui);
+    renderNav();
+    renderTopics();
+    renderConfigEditor();
+    flashConfigMsg("Reset ✓", "new");
+    refresh();
+  });
+
+  els.btnExportConfig.addEventListener("click", ()=>{
+    const blob = new Blob([JSON.stringify(cfg, null, 2)], { type:"application/json" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "neonnews99.config.json";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(()=>URL.revokeObjectURL(a.href), 1000);
+  });
+
+  els.btnImportConfig.addEventListener("click", ()=>{
+    els.importFile.value = "";
+    els.importFile.click();
+  });
+
+  els.importFile.addEventListener("change", async (ev)=>{
+    const file = ev.target.files?.[0];
+    if (!file) return;
+    const text = await file.text();
+    const parsed = safeJsonParse(text);
+    if (!parsed || !parsed.categories){
+      flashConfigMsg("Import failed: invalid config", "warn");
+      return;
+    }
+    cfg = parsed;
+    saveConfig(cfg);
+    renderNav();
+    renderTopics();
+    renderConfigEditor();
+    flashConfigMsg("Imported ✓", "new");
+    refresh();
+  });
+
+  els.btnSettings.addEventListener("click", ()=>{
+    openPanel(els.settingsPanel);
+    renderConfigEditor();
+  });
+  els.btnVibe.addEventListener("click", ()=>{
+    openPanel(els.vibePanel);
+    renderVibe();
+  });
+  els.btnRefresh.addEventListener("click", ()=>refresh());
+
+  els.searchBox.addEventListener("input", ()=>applyFiltersAndRender());
+  els.timeRange.addEventListener("change", ()=>applyFiltersAndRender());
+  els.sortMode.addEventListener("change", ()=>applyFiltersAndRender());
+}
+
+// ---------- Vibe Coding Challenge ----------
+function seededRandom(seedStr){
+  let h = 2166136261;
+  for (let i=0;i<seedStr.length;i++){
+    h ^= seedStr.charCodeAt(i);
+    h = Math.imul(h, 16777619);
+  }
+  let x = h >>> 0;
+  return () => {
+    x ^= x << 13; x >>>= 0;
+    x ^= x >> 17; x >>>= 0;
+    x ^= x << 5;  x >>>= 0;
+    return (x >>> 0) / 4294967296;
+  };
+}
+
+function pick(rng, arr){
+  return arr[Math.floor(rng() * arr.length)];
+}
+
+function renderVibe(){
+  const today = new Date();
+  const seed = `${today.getFullYear()}-${today.getMonth()+1}-${today.getDate()}`;
+  const rng = seededRandom("NEONNEWS99|" + seed);
+
+  const interests = [
+    "Premier League matchday tracker",
+    "Manchester United transfer rumor sanity-checker",
+    "Seattle Seahawks draft-board explainer",
+    "Seattle Mariners pitching matchup scout",
+    "Seattle Sounders pre-game cheat sheet",
+    "Rail ETA anomaly detector",
+    "Intermodal terminal dwell dashboard",
+    "Startup IPO readiness checklist",
+    "VC memo generator for a seed round",
+    "AI agent to triage support tickets"
+  ];
+
+  const constraints = [
+    "No backend. Browser-only.",
+    "Uses only RSS + public endpoints.",
+    "Save everything to localStorage.",
+    "Make it run fast on a phone.",
+    "Design it like a 90s desktop app.",
+    "Include an export button for CSV/JSON.",
+    "Add a ‘confidence meter’ with simple heuristics.",
+    "Include one clever ‘delight’ interaction."
+  ];
+
+  const deliverables = [
+    "A single-page app with 3 views",
+    "A tiny dashboard + one detail page",
+    "A list view + filters + a stats footer",
+    "A ‘wizard’ that outputs a plan",
+    "A card feed + keyboard shortcuts"
+  ];
+
+  const testPlan = [
+    "Load with empty cache, confirm graceful errors",
+    "Throttle network, confirm the UI remains usable",
+    "Run on mobile width, confirm layout holds",
+    "Try 10 refreshes, confirm no duplicate spam",
+    "Turn off one feed, confirm app continues"
+  ];
+
+  const ideaA = pick(rng, interests);
+  const ideaB = pick(rng, interests);
+  const combo = ideaA === ideaB ? ideaA : `${ideaA} + ${ideaB}`;
+
+  const body = `
+    <div class="hint" style="margin-bottom:10px;">
+      A challenge prompt you can finish in one sitting. Hit “Remix” for a new one.
+    </div>
+
+    <div class="card">
+      <div class="meta" style="margin-top:0;">
+        <span class="badge hot">CHALLENGE</span>
+        <span class="badge">${escapeHtml(seed)}</span>
+      </div>
+      <h3 style="margin-top:8px;">Build: <span style="color:var(--accent2)">${escapeHtml(combo)}</span></h3>
+      <div class="summary">
+        Create an MVP that solves a micro-problem and feels “shippable” without a backend.
+      </div>
+
+      <div style="height:8px"></div>
+
+      <div class="meta"><span class="badge">Constraints</span></div>
+      <ul class="takeaways">
+        <li>${escapeHtml(pick(rng, constraints))}</li>
+        <li>${escapeHtml(pick(rng, constraints))}</li>
+        <li>${escapeHtml(pick(rng, constraints))}</li>
+      </ul>
+
+      <div class="meta"><span class="badge">Deliverable</span></div>
+      <div class="summary">${escapeHtml(pick(rng, deliverables))}</div>
+
+      <div style="height:8px"></div>
+      <div class="meta"><span class="badge">Stretch Goal</span></div>
+      <div class="summary">Add a “Why it matters” blurb from simple rules (no LLM) and a hotness score.</div>
+
+      <div style="height:8px"></div>
+      <div class="meta"><span class="badge">Test Plan</span></div>
+      <ul class="takeaways">
+        ${testPlan.map(x => `<li>${escapeHtml(x)}</li>`).join("")}
+      </ul>
+
+      <div class="row">
+        <button class="btn ghost" id="btnRemix">🎲 Remix</button>
+        <button class="btn good" id="btnCopySpec">📋 Copy spec</button>
+      </div>
+    </div>
+  `;
+
+  els.vibeBody.innerHTML = body;
+
+  document.getElementById("btnRemix").addEventListener("click", ()=>{
+    const rng2 = seededRandom("NEONNEWS99|" + seed + "|" + Math.random().toString(16).slice(2));
+    const a = pick(rng2, interests);
+    const b = pick(rng2, interests);
+    const combo2 = a === b ? a : `${a} + ${b}`;
+
+    els.vibeBody.querySelector("h3").innerHTML = `Build: <span style="color:var(--accent2)">${escapeHtml(combo2)}</span>`;
+    const lis = els.vibeBody.querySelectorAll(".takeaways")[0].querySelectorAll("li");
+    lis[0].textContent = pick(rng2, constraints);
+    lis[1].textContent = pick(rng2, constraints);
+    lis[2].textContent = pick(rng2, constraints);
+    els.vibeBody.querySelectorAll(".summary")[2].textContent = pick(rng2, deliverables);
+  });
+
+  document.getElementById("btnCopySpec").addEventListener("click", async ()=>{
+    const spec = els.vibeBody.innerText.trim().replace(/\n{3,}/g,"\n\n");
+    await navigator.clipboard.writeText(spec);
+    setStatus("Copied spec ✓", "new");
+    setTimeout(()=>setStatus("Loaded", ""), 1200);
+  });
+}
+
+// ---------- Boot ----------
+function boot(){
+  renderNav();
+  renderTopics();
+  renderConfigEditor();
+  hookSettings();
+  refresh();
+}
+
+boot();
+</script>
+</body>
+</html>
